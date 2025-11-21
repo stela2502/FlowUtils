@@ -1,0 +1,20 @@
+Bootstrap: docker
+From: ubuntu:latest
+
+%labels
+    Author "Stefan Lang"
+    Description "Ubuntu-based Apptainer image for Flow Cytometry / FACS analysis using FlowKit, FlowUtils, fcsparser, UMAP, sklearn."
+    Version "1.0"
+
+%post
+    mkdir /data1
+    mkdir /data2
+    mkdir /mnt/sccbioinf
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export PYTHONUNBUFFERED=1
+    export PATH=/opt/conda/bin:$PATH
+    export PIP_BREAK_SYSTEM_PACKAGES=1
+

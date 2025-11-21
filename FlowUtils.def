@@ -1,0 +1,110 @@
+Bootstrap: docker
+From: ubuntu:latest
+
+%labels
+    Author "Stefan Lang"
+    Description "Ubuntu-based Apptainer image for Flow Cytometry / FACS analysis using FlowKit, FlowUtils, fcsparser, UMAP, sklearn."
+    Version "1.0"
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export PYTHONUNBUFFERED=1
+    export PATH=/opt/conda/bin:$PATH
+    export PIP_BREAK_SYSTEM_PACKAGES=1
+
+%post
+    echo "---- Updating system ----"
+    apt-get update && apt-get install -y --no-install-recommends \
+        wget \
+        curl \
+        git \
+        build-essential \
+        python3 \
+        libpython3-dev \
+        python3-venv \
+        cython3 \
+        ca-certificates \
+        pkg-config \
+        libxml2-dev \
+        libxslt1-dev \
+        libhdf5-dev \
+        libssl-dev \
+        libffi-dev \
+        locales \
+        && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    echo "---- Setting locale ----"
+    locale-gen en_US.UTF-8    
+
+    export PIP_BREAK_SYSTEM_PACKAGES=1
+    curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+    python3 /tmp/get-pip.py
+
+    echo "---- Python environment ----"
+    python3 -m pip install --break-system-packages pip wheel setuptools
+
+    echo "---- Installing FACS/flow cytometry tools ----"
+    python3 -m pip install --break-system-packages \
+        flowkit \
+        flowutils \
+        fcsparser \
+        flowio \
+        pandas \
+        numpy \
+        scipy \
+        matplotlib \
+        seaborn \
+        scikit-learn \
+        umap-learn \
+        hdbscan
+
+    echo "---- Installing Jupyter (optional) ----"
+    python3 -m pip install --break-system-packages jupyter jupyterlab
+    
+    # Install JupyterLab and related Python packages
+    pip install --no-cache-dir --break-system-packages \
+        jupyterlab \
+        nbconvert \
+        papermill \
+        numpy \
+        scipy \
+        pandas \
+        matplotlib \
+        seaborn \
+        notebook
+   # Clean apt cache
+   apt-get clean
+   rm -rf /var/lib/apt/lists/*
+   
+   # Remove temporary files created during build
+   rm -rf /var/tmp/*
+   
+   # Remove Python cache & compiled bytecode
+   find / -type f -name "*.pyc" -delete || true
+   find / -type d -name "__pycache__" -exec rm -rf {} + || true
+
+   # Remove documentation (optional but reduces image size)
+   #rm -rf /usr/share/man/*
+   #rm -rf /usr/share/doc/*
+   #rm -rf /usr/share/info/*
+   #rm -rf /usr/share/locale/*
+
+   # Remove unused locales but keep en_US.UTF-8
+   #find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name "en_US.utf8" -exec rm -rf {} +
+
+   # Remove cached pip wheels
+   rm -rf /root/.cache/
+   rm -rf /home/*/.cache/
+
+%environment
+    # Set environment variables
+    export PATH=$PATH:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/lib/R/bin
+    export PIP_BREAK_SYSTEM_PACKAGES=1
+
+%runscript
+    # This is the default command when the container is run
+    exec jupyter lab --ip=0.0.0.0 --no-browser --allow-root
+
+%test
+    # Test if JupyterLab is installed correctly
