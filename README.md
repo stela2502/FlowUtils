@@ -18,6 +18,8 @@ The image is built from `FlowUtils.def` and deployed on COSMOS/COSMOS‑SENS usi
 
 ## Features
 
+The main feature is my [FlowJo project file centered atomatic analysis pipeline](./Flowforge.md)!
+
 ### ✔ Complete FACS Analysis Environment
 The container includes:
 

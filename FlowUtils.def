@@ -73,7 +73,12 @@ From: ubuntu:latest
         matplotlib \
         seaborn \
         notebook
+
+
+   pip install git+https://github.com/stela2502/FACSForge.git
+
    # Clean apt cache
+   
    apt-get clean
    rm -rf /var/lib/apt/lists/*
    

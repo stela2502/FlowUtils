@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Path to your Singularity image
+SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+VERSION=1.2
+SINGULARITY_IMAGE="$SCRIPT_DIR/../FlowUtils_v${VERSION}.sif"
+
+# Check if a command was provided
+if [ "$#" -lt 1 ]; then
+  singularity exec "$SINGULARITY_IMAGE" "facsforge -h"
+  exit 1
+fi
+
+# Run the command inside the Singularity image
+singularity exec "$SINGULARITY_IMAGE" "$@"
+

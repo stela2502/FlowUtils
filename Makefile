@@ -56,6 +56,8 @@ deploy:
 	@mkdir -p $(dir $(MODULE_FILE))
 	@if [ ! -f $(MODULE_FILE) ]; then \
 		$(CURDIR)/generate_module.sh $(SERVER_DIR) $(VERSION) $(SANDBOX_DIR) > $(MODULE_FILE);\
+		cp $(CURDIR)/bin/* $(DEPLOY_DIR)/bin/; \
+		sed -i 's/^VERSION=.*/VERSION=${VERSION}/' $(DEPLOY_DIR)/bin/FlowUtils ; \
 	fi
 
 # Clean up the sandbox and image

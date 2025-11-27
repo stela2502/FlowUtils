@@ -19,75 +19,26 @@ mkdir -p "$(dirname "$MODULE_FILE")"
 
 # Create the module file
 cat <<EOF 
-help([[This module is an example Singularity Image prowiding  
-       a 'naked' Python Jupyter Lab interface to both Python and R ]])
+help([[Rustody mapps single cell fastq to either a targetet set of genes
+or a whole genome index.
+Usage: Rustody <command you want to run> ]])
 
-local version = "$VERSION"
-local base = pathJoin("$PATH_ARG")
+local base = pathJoin("${PATH_ARG}")
 
--- check if the possible bind path's are available on this system(open COSMOS and COSMOS-SENS)
--- Function to check if a path exists on the system
-function path_exists(path)
-   local file = io.open(path, "r")
-   if file then
-      file:close()
-      return true
-   else
-      return false
-   end
-end
-
--- Define possible mount points
-local mounts = {
-    "/local",
-    "/projects",
-    "/scale",
-    "/sw"
-}
-
--- Prepare the bind paths environment variable
-local bind_paths = ""
-
--- Check each mount point and only add existing ones
-for _, path in ipairs(mounts) do
-    if path_exists(path) then
-        if bind_paths == "" then
-            bind_paths = path  -- First valid path
-        else
-            bind_paths = bind_paths .. "," .. path  -- Append valid path
-        end
-    end
-end
-
--- If any valid bind paths exist, set the environment variable for Apptainer
-if bind_paths ~= "" then
-    bind_paths = "-B "..bind_paths
-end
-
--- this happens at load
-execute{cmd="singularity run "..bind_paths.." ".. base.. "/${IMAGE_NAME}_v".. version ..".sif",modeA={"load"}}
+--setenv("ANACONDA_ROOT",base)
+prepend_path("PATH",pathJoin( base ,"bin"))
 
 
--- this happens at unload
--- could also do "conda deactivate; " but that should be part of independent VE module
-
--- execute{cmd="exit",modeA={"load"}}
-
-whatis("Name         : ${IMAGE_NAME} singularity image")
-whatis("Version      : ${IMAGE_NAME} $VERSION")
+whatis("Name         : Rustody singularity image")
+whatis("Version      : Rustody 2.2.2")
 whatis("Category     : Image")
-whatis("Description  : Singularity image providing Python and R and a jupyter lab as default entry point ")
-whatis("Installed on : $(date +'%d/%m/%Y') ")
+whatis("Description  : Check the documentation on GitHub https://github.com/stela2502/")
+whatis("Installed on : 22/08/2024")
 whatis("Modified on  : --- ")
-whatis("Installed by : \`whomai\`")
+whatis("Installed by : stefanl")
 
-family("images")
+family("${IMAGE_NAME}")
 
--- Change Module Path
---local mroot = os.getenv("MODULEPATH_ROOT")
---local mdir = pathJoin(mroot,"Compiler/anaconda",version)
---prepend_path("MODULEPATH",mdir)
---
 EOF
 
 
